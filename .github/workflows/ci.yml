@@ -1,0 +1,19 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Lua tools
+        run: sudo apt-get update && sudo apt-get install -y lua5.4 lua-check
+      - name: Lua checks
+        run: find . -name '*.lua' -print0 | xargs -0 -n1 luac -p && luacheck .
+      - name: Unit tests
+        run: lua tests/unit.lua
+      - name: Contract checks
+        run: ./tests/contract.sh
