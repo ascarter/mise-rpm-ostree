@@ -2,6 +2,7 @@ local cmd = require("cmd")
 local json = require("json")
 
 local M = {}
+M.log = print
 
 local function fail(message)
   error("rpm-ostree package plugin: " .. message, 0)
@@ -52,7 +53,7 @@ function M.action(ctx, parts, purpose)
   end
   local command = M.command(parts)
   if ctx.dry_run then
-    print(command)
+    M.log(command)
   else
     exec(command, purpose)
   end
@@ -65,7 +66,7 @@ function M.refresh(ctx)
   end
   local command = "rpm-ostree refresh-md"
   if ctx.dry_run then
-    print(command)
+    M.log(command)
   else
     exec(command, "metadata refresh")
   end

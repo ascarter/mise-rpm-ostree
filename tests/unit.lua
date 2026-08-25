@@ -73,8 +73,8 @@ equal(calls[1], "rpm-ostree install --idempotent ripgrep podman-compose", "batch
 
 calls = {}
 local printed = {}
-local original_print = print
-print = function(message)
+local original_log = rpm_ostree.log
+rpm_ostree.log = function(message)
   table.insert(printed, message)
 end
 rpm_ostree.refresh({ update = true, dry_run = true })
@@ -83,7 +83,7 @@ rpm_ostree.action(
   { "rpm-ostree", "install", "--idempotent" },
   "install"
 )
-print = original_print
+rpm_ostree.log = original_log
 equal(#calls, 0, "dry-run command count")
 equal(printed[1], "rpm-ostree refresh-md", "dry-run refresh")
 equal(printed[2], "rpm-ostree install --idempotent ripgrep", "dry-run install")

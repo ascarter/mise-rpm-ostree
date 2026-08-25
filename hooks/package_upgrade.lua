@@ -7,7 +7,7 @@ function PLUGIN:PackageUpgrade(ctx)
   end
   local command = "rpm-ostree upgrade"
   if ctx.dry_run then
-    print(command)
+    rpm_ostree.log(command)
   else
     rpm_ostree.run({ "rpm-ostree", "upgrade" }, "system upgrade")
   end
