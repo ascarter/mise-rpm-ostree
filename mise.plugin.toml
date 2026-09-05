@@ -1,4 +1,4 @@
 [package-manager]
 requires = ["rpm-ostree", "rpm"]
-supports_version_pins = false
+supports_version_pins = true
 os = ["linux"]

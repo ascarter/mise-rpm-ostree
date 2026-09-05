@@ -17,8 +17,12 @@ local function exec(command, purpose)
 end
 
 local function validate_version(package)
-  if package.version ~= nil and package.version ~= "latest" then
-    fail("package " .. tostring(package.name) .. " must use version \"latest\"")
+  local version = package.version
+  if version == nil or version == "latest" then
+    return
+  end
+  if type(version) ~= "string" or not version:match("^[A-Za-z0-9][A-Za-z0-9+._~^:-]*$") then
+    fail("package " .. tostring(package.name) .. " has invalid exact version: " .. tostring(version))
   end
 end
 
@@ -35,6 +39,20 @@ function M.names(packages)
   return names
 end
 
+function M.specs(packages)
+  local names = M.names(packages)
+  local specs = {}
+  for index, package in ipairs(packages or {}) do
+    local version = package.version
+    if version == nil or version == "latest" then
+      table.insert(specs, names[index])
+    else
+      table.insert(specs, names[index] .. "-" .. version)
+    end
+  end
+  return specs
+end
+
 function M.command(parts)
   return table.concat(parts, " ")
 end
@@ -43,13 +61,13 @@ function M.run(parts, purpose)
   return exec(M.command(parts), purpose)
 end
 
-function M.action(ctx, parts, purpose)
+function M.action(ctx, parts, purpose, versioned)
   if #(ctx.packages or {}) == 0 then
     return {}
   end
-  local names = M.names(ctx.packages)
-  for _, name in ipairs(names) do
-    table.insert(parts, name)
+  local packages = versioned and M.specs(ctx.packages) or M.names(ctx.packages)
+  for _, package in ipairs(packages) do
+    table.insert(parts, package)
   end
   local command = M.command(parts)
   if ctx.dry_run then

@@ -3,7 +3,7 @@ set -euo pipefail
 
 luac -p metadata.lua lib/rpm_ostree.lua hooks/*.lua
 grep -Fq 'requires = ["rpm-ostree", "rpm"]' mise.plugin.toml
-grep -Fq 'supports_version_pins = false' mise.plugin.toml
+grep -Fq 'supports_version_pins = true' mise.plugin.toml
 grep -Fq 'os = ["linux"]' mise.plugin.toml
 
 if grep -R -n -E 'sudo|--apply-live|reboot' hooks lib; then
